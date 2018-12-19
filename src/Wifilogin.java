@@ -1,6 +1,7 @@
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import org.openqa.selenium.By;
+
 import java.io.File;
 
 import org.openqa.selenium.WebElement;
@@ -21,16 +22,22 @@ public class Wifilogin {
 
     @BeforeTest
 
-    public void wificheck() throws MalformedURLException, InterruptedException {
+    public void wifiCheck() throws MalformedURLException, InterruptedException {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability("platformName", "Android");
-        capabilities.setCapability("platformVersion", "6.0.1");
-        capabilities.setCapability("udid", "ZY2226MHT8");
-        capabilities.setCapability("deviceName", "Moto");
+        //capabilities.setCapability("platformVersion", "8.1.0");
+        //capabilities.setCapability("udid", "9323542a");
+        capabilities.setCapability("deviceName", "Sony");
         capabilities.setCapability("automationName", "sample1");
         capabilities.setCapability("noReset", "True");
         capabilities.setCapability("autoGrantPermissions", "True");
         capabilities.setCapability("autoAcceptAlerts", "True");
+        //capabilities.setCapability("avd", "Nexus_6_API_22");
+
+//        String Name=driver.getCapabilities().getCapability("deviceName").toString();
+//        System.out.println(Name);
+//        String Version =driver.getCapabilities().getCapability("CapabilityType.VERSION").toString();
+//        System.out.println(Version);
         File app = new File("/Users/rahulmittapalli/Downloads/WiFiAnalyzer.apk");
         capabilities.setCapability("app", app.getAbsolutePath());
         driver = new AndroidDriver(new URL("http://127.0.0.1:4723/wd/hub"), capabilities);
@@ -64,7 +71,10 @@ public class Wifilogin {
         Thread.sleep(3000);
         driver.findElement(By.id("com.app.wifianalyzer:id/menu_rescan")).click();
         Thread.sleep(2000);
-        driver.findElement(By.id("com.app.wifianalyzer:id/five_GHZ")).click();
+        WebElement five = driver.findElement(By.id("com.app.wifianalyzer:id/five_GHZ"));
+        String name = five.getText();
+        System.out.println(name);
+        five.click();
         Thread.sleep(3000);
         Assert.assertEquals(FiveText.getText(), "This device does not support 5GHZ mode");
         Thread.sleep(3000);
@@ -75,6 +85,7 @@ public class Wifilogin {
         driver.findElement(By.id("com.app.wifianalyzer:id/menu_rescan")).click();
         System.out.println(driver.findElement(By.className("android.widget.ProgressBar")).isDisplayed());
         driver.findElement(By.className("android.widget.ImageButton")).click();
+        Thread.sleep(2000);
         WebElement wifisymbol = driver.findElement(By.id("com.app.wifianalyzer:id/wifi_signal_level"));
         System.out.println("Wifi symbol status is " + wifisymbol.isDisplayed());
         WebElement NetworkName = driver.findElement(By.id("com.app.wifianalyzer:id/current_network_name"));
@@ -85,7 +96,11 @@ public class Wifilogin {
         WebElement mainlist = driver.findElement(By.id("com.app.wifianalyzer:id/refresh_scan_list"));
         List<WebElement> scanlist = mainlist.findElements(By.className("android.widget.FrameLayout"));
         System.out.println(scanlist.size());
-        scanlist.get(1).findElement(By.className("android.widget.RadioButton")).click();
+        if (scanlist.size() > 1) {
+            scanlist.get(1).findElement(By.className("android.widget.RadioButton")).click();
+        } else {
+            scanlist.get(0).findElement(By.className("android.widget.RadioButton")).click();
+        }
         driver.findElement(By.id("com.app.wifianalyzer:id/show_recommendations_btn")).click();
         driver.findElement(By.className("android.widget.ImageButton")).click();
 //        for(int i=0;i<scanlist.size();i++)
@@ -101,27 +116,26 @@ public class Wifilogin {
 
     public void wifiChecking(AppiumDriver driver) throws InterruptedException {
         this.driver = driver;
-        if(driver.findElements(By.id("com.app.wifianalyzer:id/wifi_enable_btn")).size() != 0){
-            System.out.println("Element is Present");
+        if (driver.findElements(By.id("com.app.wifianalyzer:id/wifi_enable_btn")).size() != 0) {
+            System.out.println("Wifi is turned OFF");
             driver.findElement(By.id("com.app.wifianalyzer:id/wifi_enable_btn")).click();
-            }else{
-            System.out.println("Element is Absent");
+            Thread.sleep(10000);
+        } else {
+            System.out.println("Wifi is turned ON");
         }
     }
 
     public void locationChecking(AppiumDriver driver) throws InterruptedException {
         this.driver = driver;
 
-        if (driver.findElements(By.id("com.app.wifianalyzer:id/dialog_ok")).size()!=0) {
+        if (driver.findElements(By.id("com.app.wifianalyzer:id/dialog_ok")).size() != 0) {
             System.out.println("Location is turned OFF");
             WebElement location = driver.findElement(By.id("com.app.wifianalyzer:id/dialog_ok"));
             System.out.println(location.isDisplayed());
             location.click();
             driver.findElement(By.id("com.android.settings:id/switch_widget")).click();
             Thread.sleep(3000);
-        }
-        else
-        {
+        } else {
             System.out.println("Location is turned ON");
         }
     }
